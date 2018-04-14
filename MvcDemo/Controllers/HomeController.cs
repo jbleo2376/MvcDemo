@@ -15,16 +15,12 @@ namespace MvcDemo.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult EmpQueryData()
         {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
+            return Json(new {id=1});
         }
     }
 }

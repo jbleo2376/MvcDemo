@@ -1,0 +1,20 @@
+﻿/*
+    設定查詢條件區，共用文字大小
+*/
+.container .conditionBlock {
+    font-size:16px;
+}
+
+/*
+    查詢條件-標題 
+*/
+.conditionBlock .condition{
+    text-align:center;
+}
+
+/*
+    查詢條件-按鈕行
+*/
+.conditionBlock .buttonBlock {
+    text-align:center;
+}
