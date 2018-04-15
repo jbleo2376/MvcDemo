@@ -2,17 +2,7 @@
     ViewBag.Title = "Home Page";
 }
 
-@section scripts {
-@Scripts.Render("~/bundles/jqueryval")
-@Scripts.Render("~/bundles/unobtrusive-ajax");
-    <script>
-        function Test(data) {
-            alert(JSON.stringify(data));
-        }
-    </script>
-}
-
-@using (Ajax.BeginForm("EmpQueryData", new AjaxOptions { OnSuccess = "Test" }))
+@using (Ajax.BeginForm("EmpQueryData", new AjaxOptions { OnSuccess = "OnSuccess" }))
 {
     <div class="container conditionBlock">
         <div class="page-header">
@@ -32,9 +22,101 @@
         </div>
         <div class="row">
             <div class="=col-md-12 buttonBlock">
-                <input type="submit" class="btn btn-primary" value="查詢" />
+                <input type="submit" class="btn btn-primary" value="查詢" onclick="Validating();" />
+                <button id="btnAdd" type="button" class="btn btn-primary" onclick="btnAdd_Click();">新增</button>
                 <button type="button" class="btn btn-primary">清除</button>
             </div>
         </div>
     </div>
+    <br/>
+    <table id="grid"></table>
+    <div id="pager"></div>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/unobtrusive-ajax");
+    @Scripts.Render("~/bundles/jqueryjqgrid");
+    <script>
+        //檢核
+        function Validating() {
+            //數字檢核
+            var regex = /^\d*$/;
+            if (!regex.test($("#EmpId").val())){
+                alert("員工編號請輸入數字");
+                if (event) event.returnValue = false;
+                return false;
+            }
+
+            if (!regex.test($("#EmpPhone").val())) {
+                alert("員工電話請輸入數字");
+                if (event) event.returnValue = false;
+                return false;
+            }
+            return true;
+        }
+
+        //查詢按鈕,CallBack
+        function OnSuccess(empArray) {
+            if (empArray.length == 0) { alert('查無資料'); return; }
+
+            InitJqGrid(empArray);
+        }
+
+        function InitJqGrid(empArray) {
+            var grid = $("#grid");
+            grid.jqGrid('clearGridData');
+
+            grid.jqGrid({
+                scroll: false,    //不分頁
+                scrollbar:true,
+                data: empArray,
+                datatype: 'local',
+                jsonReader: {
+                    repeatitems: false  //設定false則可以依照name當索引去繫結model的資料,設true則是必須按照順序繫結(兩種方法的model結構不同)
+                },
+                height: 250,
+                width: 1015,
+                shrinkToFit: false, //寬度是否要成比例縮放
+                colNames: [
+                        '員工編號',
+                        '員工姓名',
+                        '員工電話',
+                        '員工地址',
+                        ''
+                ],
+                colModel: [
+                     { name: 'EmployeeID', index: 'EmployeeID', width: 90, sortable: false, align: 'center' },
+                     { name: 'LastName', index: 'LastName', width: 100, sortable: false, align: 'center' },
+                     { name: 'HomePhone', index: 'HomePhone', width: 100, sortable: false, align: 'center' },
+                     { name: 'Address', index: 'EmpPhone', width: 300, sortable: false, align: 'center' },
+                     { name: 'btn', index: 'btn', width: 300, sortable: false, align: 'center', formatter: InitGridBtn }
+                ],
+                rowNum: 8,          //限制頁面顯示幾筆
+                hoverrows: false,   //滑鼠移到row上顯示特效
+                pagination: true,
+                rowList: [5, 10, 20, 50],
+                pager: $('#pager'),
+                gridComplete: function () {
+                }
+            });
+            grid.setGridParam({ data: empArray, page: 1 })
+            grid.trigger('reloadGrid');
+            //grid.setGridParam({
+            //    datatype: "json"
+            //}).trigger("reloadGrid", [{ page: 1 }]);
+            //grid.jqGrid('navGrid', '#pager', { edit: false, add: false, del: false });
+
+        }
+
+        function btnAdd_Click() {
+            alert('test');
+            $("#dialog").dialog({ modal:true}); //model:遮罩預設False
+        }
+
+        function InitGridBtn(cellvalue, options, rowObject)
+        {
+            return '<button type="button" class="btn">修改</button><button type="button" class="btn">刪除</button>';
+        }
+    </script>
 }

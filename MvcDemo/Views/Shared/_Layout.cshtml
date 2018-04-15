@@ -36,8 +36,12 @@
         </footer>
     </div>
 
+    <div id="dialog" title="Basic dialog" style="display:none">
+        <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+    </div>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryUi")
     @RenderSection("scripts", required: false)
 </body>
 </html>

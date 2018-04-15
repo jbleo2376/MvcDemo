@@ -8,7 +8,7 @@ namespace MvcDemo.Models
     public class EmployeeViewModel
     {
         //員編
-        public int EmpId { get; set; }
+        public string EmpId { get; set; }
 
         //員工姓名
         public string EmpNm { get; set; }
