@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using MvcDemo.Repository;
 using MvcDemo.Models;
+using Newtonsoft.Json;
 
 namespace MvcDemo.Controllers
 {
@@ -33,6 +34,60 @@ namespace MvcDemo.Controllers
             {
                 //Write Log..
                 throw ex;
+            }
+
+        }
+
+        public PartialViewResult ShowEmpPartial(string View, string RowData)
+        {
+            try
+            {
+                //ADD MODE
+                if (RowData == null)
+                {
+                    return PartialView(View);
+                }
+
+
+                EmployeeModels employeeModel = JsonConvert.DeserializeObject<EmployeeModels>(RowData);
+                return PartialView(View, employeeModel);
+            }
+            catch (Exception ex)
+            {
+                //write log
+                throw ex;
+            }
+        }
+
+        public ActionResult SaveData(EmployeeModels Model)
+        {
+            try
+            {
+                //沒有ID,代表新增(DB編號從1開始)
+                if (Model.EmployeeID == 0) { Repository.InsertEmpData(Model); }
+                else { Repository.updateEmpData(Model); }
+                
+                return Content("1");
+            }
+            catch (Exception ex)
+            {
+                //WriteLog..
+                return Content("0");
+            }
+        }
+
+        public ActionResult DeleteEmpData(string EmployeeID) 
+        {
+            try
+            {
+                 Repository.DeleteEmpData(EmployeeID);
+                 return Content("1");
+                
+            }
+            catch (Exception ex)
+            {
+                //WriteLog..
+                return Content("0");
             }
             
         }

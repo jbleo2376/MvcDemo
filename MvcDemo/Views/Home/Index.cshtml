@@ -22,7 +22,7 @@
         </div>
         <div class="row">
             <div class="=col-md-12 buttonBlock">
-                <input type="submit" class="btn btn-primary" value="查詢" onclick="Validating();" />
+                <input id="btnQuery" type="submit" class="btn btn-primary" value="查詢" onclick="Validating();" />
                 <button id="btnAdd" type="button" class="btn btn-primary" onclick="btnAdd_Click();">新增</button>
                 <button type="button" class="btn btn-primary">清除</button>
             </div>
@@ -35,8 +35,9 @@
 
 @section scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/bundles/unobtrusive-ajax");
-    @Scripts.Render("~/bundles/jqueryjqgrid");
+    @Scripts.Render("~/bundles/unobtrusive-ajax")
+    @Scripts.Render("~/bundles/jqueryjqgrid")
+    @Scripts.Render("~/bundles/common")
     <script>
         //檢核
         function Validating() {
@@ -80,15 +81,19 @@
                 shrinkToFit: false, //寬度是否要成比例縮放
                 colNames: [
                         '員工編號',
+                        '員工姓氏',
                         '員工姓名',
                         '員工電話',
+                        '員工生日',
                         '員工地址',
                         ''
                 ],
                 colModel: [
-                     { name: 'EmployeeID', index: 'EmployeeID', width: 90, sortable: false, align: 'center' },
+                     { name: 'EmployeeID', index: 'EmployeeID', width: 90, sortable: false, align: 'center', hidden:true },
                      { name: 'LastName', index: 'LastName', width: 100, sortable: false, align: 'center' },
+                     { name: 'FirstName', index: 'FirstName', width: 100, sortable: false, align: 'center' },
                      { name: 'HomePhone', index: 'HomePhone', width: 100, sortable: false, align: 'center' },
+                     { name: 'BirthDate', index: 'BirthDate', width: 100, sortable: false, align: 'center', formatter: "date", formatoptions: {srcformat:'Y/m/d',newformat:'Y/m/d'}},
                      { name: 'Address', index: 'EmpPhone', width: 300, sortable: false, align: 'center' },
                      { name: 'btn', index: 'btn', width: 300, sortable: false, align: 'center', formatter: InitGridBtn }
                 ],
@@ -102,21 +107,60 @@
             });
             grid.setGridParam({ data: empArray, page: 1 })
             grid.trigger('reloadGrid');
-            //grid.setGridParam({
-            //    datatype: "json"
-            //}).trigger("reloadGrid", [{ page: 1 }]);
-            //grid.jqGrid('navGrid', '#pager', { edit: false, add: false, del: false });
-
         }
 
+        //新增按鈕
         function btnAdd_Click() {
-            alert('test');
-            $("#dialog").dialog({ modal:true}); //model:遮罩預設False
+            //讀取partialView
+            var OnSuccess = function(){
+                showDialog("新增員工", 500, 500);
+            }
+            
+            var Data = {
+                "View": "EmployeePartial"
+            };
+
+            loadDialogPartial("Home/ShowEmpPartial", Data, OnSuccess);
+        }
+
+        function btnEdit_Click(id) {
+            //取得該筆Row資料           
+            var selRowData = $('#grid').getRowData(id);
+            delete selRowData.btn;//html formatter不須轉json..
+            
+            var Data = {
+                "View": "EmployeePartial",
+                "RowData": JSON.stringify(selRowData)
+            };
+
+            //讀取partialView
+            var OnSuccess = function () {
+                showDialog("編輯員工資訊", 500, 500);
+            }
+
+            loadDialogPartial("Home/ShowEmpPartial", Data, OnSuccess);
+        }
+
+        function btnDel_Click(EmployeeID)
+        {
+            $.ajax({
+                url: "Home/DeleteEmpData",
+                type: 'Post',
+                cache: false,
+                dataType: 'html',
+                data: { "EmployeeID" : EmployeeID }
+            }).done(function (result) {
+                if (result == "0") { alert("儲存失敗!請聯絡系統管理員"); }
+                if (result == "1") {
+                    alert('刪除成功!');
+                    $("#btnQuery").click();
+                }
+            });
         }
 
         function InitGridBtn(cellvalue, options, rowObject)
         {
-            return '<button type="button" class="btn">修改</button><button type="button" class="btn">刪除</button>';
+            return '<button id="btnEdit" type="button" class="btn" onClick="btnEdit_Click(\'' + options.rowId + '\');">修改</button><button type="button" class="btn" onClick="btnDel_Click(\'' + rowObject.EmployeeID + '\');">刪除</button>';
         }
     </script>
 }

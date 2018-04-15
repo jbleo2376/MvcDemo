@@ -1,0 +1,100 @@
+﻿@model MvcDemo.Models.EmployeeModels
+
+@using (Ajax.BeginForm("SaveData", new AjaxOptions { OnSuccess = "SaveSuccess" }))
+{
+    <div class="form-horizontal">
+        <div class="form-group">
+
+            @Html.Label("員工編號", new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.TextBoxFor(model => model.EmployeeID, new {id="EmployeeID", Name="EmployeeID", @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-3" style="text-align:right">
+                @Html.Label("*", new { Style = "color:red" })
+                @Html.Label("員工姓氏")
+            </div>
+            <div class="col-md-9">
+                @Html.TextBoxFor(model => model.LastName, new { id = "LastName", Name = "LastName", @class = "form-control", @maxlength = "40" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-3" style="text-align:right">
+                @Html.Label("*", new { Style = "color:red" })
+                @Html.Label("員工姓名")
+            </div>
+            <div class="col-md-9">
+                @Html.TextBoxFor(model => model.FirstName, new { id = "FirstName", Name = "FirstName", @class = "form-control", @maxlength = "20" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("員工生日", new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.TextBoxFor(model => model.BirthDate, "{0:yyyy/MM/dd}", new { id = "BirthDate", Name = "BirthDate", @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("員工地址", new { @class = "control-label col-md-3" })
+            <div class="col-md-9">
+                @Html.TextBoxFor(model => model.Address, new { id = "Address", Name = "Address", @class = "form-control", @maxlength = "120" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="btnSave" value="儲存" class="btn btn-primary" onclick="return btnSave_Click();" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script>
+    $(document).ready(function () {
+        $("#BirthDate").datepicker({ dateFormat: "yy/mm/dd" });
+        var txtEmployeeID = $("#EmployeeID");
+        txtEmployeeID.prop('readonly', true);
+        txtEmployeeID.css("color", "#c0c0c0");
+        
+        @if (Model == null) {
+            //新增模式
+                } else {
+                }
+    });
+
+    function SaveValidating() {
+        if ($("#LastName").val() === "") {
+            alert('請輸入員工姓氏');
+            return false;
+        }
+
+        if ($("#FirstName").val() === "") {
+            alert('請輸入員工姓名');
+            return false;
+        }
+
+        return true;
+    }
+
+    function btnSave_Click() {
+        if (!SaveValidating()) { if (event != null) event.returnValue = false; return false; }
+    }
+
+    function SaveSuccess(result) {
+        if (result == "0") { alert("儲存失敗!請聯絡系統管理員");}
+        if (result == "1") {
+            alert('儲存成功!');
+            $("#btnQuery").click();
+        }
+        //關閉開窗
+        hideDialog();
+    }
+</script>
