@@ -24,6 +24,9 @@ namespace MvcDemo
             bundles.Add(new ScriptBundle("~/bundles/jqueryUi").Include(
                 "~/Scripts/jquery-ui-1.12.1.min.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/common").Include(
+            "~/Scripts/common/common.js"));
+
             // 使用開發版本的 Modernizr 進行開發並學習。然後，當您
             // 準備好實際執行時，請使用 http://modernizr.com 上的建置工具，只選擇您需要的測試。
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
