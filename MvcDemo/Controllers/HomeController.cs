@@ -63,8 +63,8 @@ namespace MvcDemo.Controllers
         {
             try
             {
-                //沒有ID,代表新增
-                if (Model.EmployeeID == null) { Repository.InsertEmpData(Model); }
+                //沒有ID,代表新增(DB編號從1開始)
+                if (Model.EmployeeID == 0) { Repository.InsertEmpData(Model); }
                 else { Repository.updateEmpData(Model); }
                 
                 return Content("1");
@@ -74,6 +74,22 @@ namespace MvcDemo.Controllers
                 //WriteLog..
                 return Content("0");
             }
+        }
+
+        public ActionResult DeleteEmpData(string EmployeeID) 
+        {
+            try
+            {
+                 Repository.DeleteEmpData(EmployeeID);
+                 return Content("1");
+                
+            }
+            catch (Exception ex)
+            {
+                //WriteLog..
+                return Content("0");
+            }
+            
         }
     }
 }

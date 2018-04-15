@@ -141,9 +141,26 @@
             loadDialogPartial("Home/ShowEmpPartial", Data, OnSuccess);
         }
 
+        function btnDel_Click(EmployeeID)
+        {
+            $.ajax({
+                url: "Home/DeleteEmpData",
+                type: 'Post',
+                cache: false,
+                dataType: 'html',
+                data: { "EmployeeID" : EmployeeID }
+            }).done(function (result) {
+                if (result == "0") { alert("儲存失敗!請聯絡系統管理員"); }
+                if (result == "1") {
+                    alert('刪除成功!');
+                    $("#btnQuery").click();
+                }
+            });
+        }
+
         function InitGridBtn(cellvalue, options, rowObject)
         {
-            return '<button id="btnEdit" type="button" class="btn" onClick="btnEdit_Click(\'' + options.rowId + '\');">修改</button><button type="button" class="btn">刪除</button>';
+            return '<button id="btnEdit" type="button" class="btn" onClick="btnEdit_Click(\'' + options.rowId + '\');">修改</button><button type="button" class="btn" onClick="btnDel_Click(\'' + rowObject.EmployeeID + '\');">刪除</button>';
         }
     </script>
 }

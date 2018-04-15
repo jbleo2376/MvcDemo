@@ -186,5 +186,31 @@ FROM Employees {0}";
             }
         }
         #endregion
+
+        #region Delete
+        public void DeleteEmpData(string EmployeeID)
+        {
+            try
+            {
+                string strConn = ConfigurationManager.ConnectionStrings["NorthwndConnection"].ToString();
+                using (SqlConnection conn = new SqlConnection(strConn))
+                {
+                    string Sql = @"DELETE FROM Employees WHERE EmployeeID = @EmployeeID";
+                    using (SqlCommand cmd = new SqlCommand(Sql, conn))
+                    {
+                        conn.Open();
+                        cmd.Parameters.Add("EmployeeID", SqlDbType.Int, 4).Value = EmployeeID;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //單筆入檔，就不放Transaction了
+                //Write Log..
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
